@@ -1,0 +1,11 @@
+spring:
+  datasource:
+#    url: jdbc:mysql://121.5.66.232:33061/future?rewriteBatchedStatements=true
+#    username: root
+#    password: root@future.com
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      master:
+        url: jdbc:mysql://xleon.site:33061/future?rewriteBatchedStatements=true
+        username: root
+        password: root@future.com

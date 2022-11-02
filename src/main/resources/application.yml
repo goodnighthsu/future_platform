@@ -1,0 +1,22 @@
+config:
+  pageSize: 50
+  pageSizeMax: 1000
+
+  jwt:
+    secret: MEgCQQDA0sctmS3pYL/sxGa7WJCjQv7zoWS6wx3Lkd3edN/86u99nY2Baxxtd6ry
+    expiry: 1440
+
+server:
+  compression:
+    enable: true
+
+spring:
+  application:
+    name: platform
+
+  jakson:
+    date-format: yyyy-MM-dd HH:mm:ss.SSS
+    time-zone: GMT+8
+
+  profiles:
+    active: dev

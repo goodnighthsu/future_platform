@@ -36,4 +36,7 @@ public class SysUserEntity extends BaseEntity {
 
     @TableField(exist = false)
     private String token;
+
+    @TableField(exist = false)
+    private SysPermission[] permissions;
 }

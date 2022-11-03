@@ -88,26 +88,8 @@ public class SysRoleController extends BaseController {
 
     @GetMapping("/{id}/permission")
     public Result<SysPermission[]> listRolePermission(@PathVariable Integer id) throws IOException {
-        SysPermission[] rolePermissions = rolePermission(appConfig.appPermissions(), id);
+        SysPermission[] rolePermissions = sysRolePermissionService.permissions(id);
         return Result.success(rolePermissions);
-    }
-
-    private SysPermission[] rolePermission(SysPermission[] permissions, Integer roleId) {
-        for (SysPermission permission :
-                permissions) {
-            SysRolePermissionEntity isAssign = sysRolePermissionMapper.getAssigned(roleId, permission.getTitle());
-            if (isAssign != null) {
-                permission.setState(StateEnum.ENABLE);
-            }
-
-            if (permission.getChildren() == null || permission.getChildren().length == 0) {
-                continue;
-            }
-
-            rolePermission(permission.getChildren(), roleId);
-        }
-
-        return permissions;
     }
 
     @Data

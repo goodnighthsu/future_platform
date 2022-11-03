@@ -11,12 +11,16 @@ import site.xleon.platform.core.MyException;
 import site.xleon.platform.core.Result;
 import site.xleon.platform.core.enums.StateEnum;
 import site.xleon.platform.mapper.SysRoleMapper;
+import site.xleon.platform.mapper.SysRolePermissionService;
 import site.xleon.platform.mapper.SysUserMapper;
+import site.xleon.platform.mapper.impl.SysRolePermissionServiceImpl;
+import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRoleEntity;
 import site.xleon.platform.models.SysUserEntity;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -27,6 +31,9 @@ public class SysUserController extends BaseController {
     private final SysUserMapper sysUserMapper;
 
     private final SysRoleMapper sysRoleMapper;
+
+    private final SysRolePermissionServiceImpl rolePermissionServiceImpl;
+
 
     @Data
     public static class LoginParams {
@@ -95,9 +102,11 @@ public class SysUserController extends BaseController {
     }
 
     @GetMapping("/current")
-    public Result<SysUserEntity> current() throws MyException {
+    public Result<SysUserEntity> current() throws MyException, IOException {
         SysUserEntity user = sysUserMapper.selectById(getUserId());
         user.setPassword(null);
+        SysPermission[] permissions = rolePermissionServiceImpl.permissions(user.getRoleId());
+        user.setPermissions(permissions);
         return Result.success(user);
     }
 

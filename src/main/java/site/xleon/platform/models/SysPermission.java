@@ -11,6 +11,8 @@ public class SysPermission {
 
     private String detail;
 
+    private String path;
+
     private boolean isMenu;
 
     private String[] api;

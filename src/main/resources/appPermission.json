@@ -1,24 +1,29 @@
 [
   {
-    "title": "accountManager",
-    "detail": "account manager",
-    "isMenu": true,
+    "title": "welcome",
+    "detail": "welcome",
+    "path": "/welcome"
+  },
+  {
+    "title": "accountManage",
+    "detail": "Account Manage",
+    "path": "/account",
     "api": ["get@/account"],
     "children": [
       {
         "title": "accountList",
-        "detail": "account list",
-        "isMenu": true,
+        "detail": "Account List",
+        "path": "/account/account",
         "api": ["get@/account/account", "get@/api/sysUser"]
       },{
         "title": "roleList",
-        "detail": "role list",
-        "isMenu": true,
+        "detail": "Role List",
+        "path": "/account/role",
         "api": ["get@/account/role", "get@/api/sysRole", "post@/api/sysRole", "put@/api/sysRole", "delete@/api/sysRole"]
       },{
-        "title": "accountLog",
-        "detail": "system log",
-        "isMenu": true,
+        "title": "systemLog",
+        "detail": "System Log",
+        "path": "/account/systemLog",
         "api": ["get@/account/log", "get@/api/sysLog"]
       }
     ]

@@ -23,12 +23,16 @@ import site.xleon.platform.core.ResultCodeEnum;
 import site.xleon.platform.core.Utils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Map;
 
 @Slf4j
 @Controller
 @ControllerAdvice
 public class DefaultExceptionHandler extends BasicErrorController {
+
     public DefaultExceptionHandler() {
         super(new DefaultErrorAttributes(), new ErrorProperties());
     }
@@ -82,6 +86,12 @@ public class DefaultExceptionHandler extends BasicErrorController {
             FieldError filedError = invalidException.getBindingResult().getFieldError();
             assert filedError != null;
             return Result.fail(filedError.getField() + ": " + filedError.getDefaultMessage());
+        } else if (exception instanceof NullPointerException) {
+            log.error("error: {} {}", request.getMethod(), request.getRequestURI(), exception);
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            exception.printStackTrace(printWriter);
+            return Result.fail(stringWriter.getBuffer().substring(0, 500));
         }
 
         log.error("error: {} {}", request.getMethod(), request.getRequestURI(), exception);

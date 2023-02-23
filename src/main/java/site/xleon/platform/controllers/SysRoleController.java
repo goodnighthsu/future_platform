@@ -9,15 +9,18 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import site.xleon.platform.core.IdParams;
 import site.xleon.platform.core.MyException;
 import site.xleon.platform.core.Result;
 import site.xleon.platform.core.enums.StateEnum;
 import site.xleon.platform.mapper.SysRoleMapper;
 import site.xleon.platform.mapper.SysRolePermissionMapper;
+import site.xleon.platform.mapper.SysUserMapper;
 import site.xleon.platform.mapper.impl.SysRolePermissionServiceImpl;
 import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRoleEntity;
 import site.xleon.platform.models.SysRolePermissionEntity;
+import site.xleon.platform.models.SysUserEntity;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -36,6 +39,8 @@ public class SysRoleController extends BaseController {
     private final SysRolePermissionMapper sysRolePermissionMapper;
 
     private final SysRolePermissionServiceImpl sysRolePermissionService;
+
+    private final SysUserMapper sysUserMapper;
 
     @GetMapping()
     public Result<Page<SysRoleEntity>> list(
@@ -60,12 +65,19 @@ public class SysRoleController extends BaseController {
         private StateEnum state = StateEnum.DISABLE;
     }
 
+    /**
+     * 添加用户角色
+     *
+     * @param params AddParams
+     * @return role
+     * @throws MyException
+     */
     @PostMapping()
     public Result<SysRoleEntity> add(@RequestBody @Valid AddParams params) throws MyException {
         String title = params.getTitle().trim();
         LambdaQueryWrapper<SysRoleEntity> query = new LambdaQueryWrapper<>();
         query.select(SysRoleEntity::getId)
-                .eq(SysRoleEntity::getId, title);
+                .eq(SysRoleEntity::getTitle, title);
         SysRoleEntity existRole =sysRoleMapper.selectOne(query);
         if (existRole != null) {
             throw new MyException("role " + title + " already exist");
@@ -84,6 +96,57 @@ public class SysRoleController extends BaseController {
         }
 
         return Result.success(role);
+    }
+
+    /**
+     * 修改角色
+     * @param role role
+     * @return updated
+     * @throws MyException exception
+     */
+    @PutMapping()
+    public Result<SysRoleEntity> update(@RequestBody SysRoleEntity role) throws MyException {
+        if (role.getId() == null) {
+            throw new MyException("Update role, id can not be null");
+        }
+
+        SysRoleEntity localRole = sysRoleMapper.selectById(role.getId());
+        if (localRole == null) {
+            throw new MyException("Can not found role by id " + role.getId());
+        }
+
+        String title = role.getTitle().trim();
+        LambdaQueryWrapper<SysRoleEntity> query = new LambdaQueryWrapper<>();
+        query.select(SysRoleEntity::getId)
+                .eq(SysRoleEntity::getTitle, title);
+        SysRoleEntity existRole =sysRoleMapper.selectOne(query);
+        if (existRole != null) {
+            throw new MyException("role " + title + " already exist");
+        }
+
+        int count = sysRoleMapper.updateById(role);
+
+        if (count <= 0) {
+            throw  new MyException("update role failure");
+        }
+
+        return Result.success(role);
+    }
+
+    @DeleteMapping
+    public Result<List<String>> deleteRole(@RequestBody IdParams params) throws MyException {
+        QueryWrapper<SysUserEntity> queryUser = new QueryWrapper<>();
+        queryUser.select("id").in("role_id", params.getIds());
+        List<SysUserEntity> users = sysUserMapper.selectList(queryUser);
+        if (!users.isEmpty()) {
+            throw new MyException("role is using");
+        }
+
+        if (sysRoleMapper.deleteBatchIds(params.getIds()) == 0) {
+            throw new MyException(("delete failure"));
+        }
+
+        return Result.success((params.getIds()));
     }
 
     @GetMapping("/{id}/permission")

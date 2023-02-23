@@ -20,3 +20,10 @@ spring:
 
   profiles:
     active: dev
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: flag
+      logic-delete-value: 1
+      logic-not-delete-value: 0

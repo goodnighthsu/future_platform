@@ -13,14 +13,13 @@ import java.util.Date;
  * base entity
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler"})
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "fieldHandler", "flag"})
 @Data
 public class BaseEntity {
 
     public static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     public static final String DEFAULT_TIMEZONE = "GMT+8";
-
 
     @JsonFormat(pattern = DEFAULT_DATE_PATTERN, timezone = DEFAULT_TIMEZONE)
     @TableField(fill = FieldFill.INSERT)
@@ -29,4 +28,9 @@ public class BaseEntity {
     @JsonFormat(pattern = DEFAULT_DATE_PATTERN, timezone = DEFAULT_TIMEZONE)
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
+
+    /**
+     * logic delete flag
+     */
+    private Boolean flag;
 }

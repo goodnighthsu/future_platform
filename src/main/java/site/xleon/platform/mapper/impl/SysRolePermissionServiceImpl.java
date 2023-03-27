@@ -10,6 +10,7 @@ import site.xleon.platform.mapper.SysRolePermissionService;
 import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRolePermissionEntity;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.IOException;
 
 @Service()
@@ -27,11 +28,17 @@ public class SysRolePermissionServiceImpl
     private SysPermission[] rolePermission(SysPermission[] permissions, Integer roleId) {
         for (SysPermission permission :
                 permissions) {
-            SysRolePermissionEntity isAssign = this.baseMapper.getAssigned(roleId, permission.getTitle());
-            if (isAssign != null) {
+            // admin 默认有所有权限
+            if (roleId.equals(1)) {
                 permission.setState(StateEnum.ENABLE);
-            } else {
-                permission.setState(StateEnum.DISABLE);
+            }else {
+                // 非管理员从数据库获取
+                SysRolePermissionEntity isAssign = this.baseMapper.getAssigned(roleId, permission.getTitle());
+                if (isAssign != null) {
+                    permission.setState(StateEnum.ENABLE);
+                } else {
+                    permission.setState(StateEnum.DISABLE);
+                }
             }
 
             if (permission.getChildren() == null || permission.getChildren().length == 0) {

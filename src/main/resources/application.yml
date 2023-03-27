@@ -7,19 +7,34 @@ config:
     expiry: 1440
 
 server:
+  port: 8810
   compression:
     enable: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureak: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://121.5.66.232:8100/eureka
 
 spring:
   application:
     name: platform
 
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      master:
+        url: jdbc:mysql://121.5.66.232:33061/future?rewriteBatchedStatements=true
+        username: root
+        password: root@future.com
+
   jakson:
     date-format: yyyy-MM-dd HH:mm:ss.SSS
     time-zone: GMT+8
-
-  profiles:
-    active: dev
 
 mybatis-plus:
   global-config:

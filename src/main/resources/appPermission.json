@@ -5,6 +5,12 @@
     "path": "/welcome"
   },
   {
+    "title": "instrument",
+    "detail": "Instrument Manage",
+    "path": "/instrument",
+    "api": ["get@/ctp/all"]
+  },
+  {
     "title": "accountManage",
     "detail": "Account Manage",
     "path": "/account",

@@ -21,9 +21,10 @@ eureka:
       defaultZone: http://121.5.66.232:8100/eureka
 
 spring:
+  profiles:
+    active: dev
   application:
     name: platform
-
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:

@@ -11,6 +11,12 @@
     "api": ["get@/ctp/all"]
   },
   {
+    "title": "market",
+    "detail": "Market Manage",
+    "path": "/instrument/market",
+    "api": ["get@/ctp/market"]
+  },
+  {
     "title": "accountManage",
     "detail": "Account Manage",
     "path": "/account",

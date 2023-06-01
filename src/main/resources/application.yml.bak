@@ -33,10 +33,10 @@ spring:
         username: root
         password: root@future.com
 
-  jakson:
+  jackson:
     date-format: yyyy-MM-dd HH:mm:ss.SSS
     time-zone: GMT+8
-
+l
 mybatis-plus:
   global-config:
     db-config:

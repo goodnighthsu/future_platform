@@ -7,7 +7,7 @@
   {
     "title": "instrument",
     "detail": "Instrument Manage",
-    "path": "/instrument",
+    "path": "/instrument/trade",
     "api": ["get@/ctp/all"]
   },
   {

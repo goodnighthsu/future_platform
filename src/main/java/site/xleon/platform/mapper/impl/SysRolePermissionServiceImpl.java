@@ -10,9 +10,6 @@ import site.xleon.platform.mapper.SysRolePermissionService;
 import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRolePermissionEntity;
 
-import javax.swing.plaf.nimbus.State;
-import java.io.IOException;
-
 @Service()
 @AllArgsConstructor
 public class SysRolePermissionServiceImpl
@@ -21,8 +18,8 @@ public class SysRolePermissionServiceImpl
 
     private final AppConfig appConfig;
 
-    public SysPermission[] permissions(Integer roleId) throws IOException {
-        return rolePermission(appConfig.appPermissions(), roleId);
+    public SysPermission[] permissions(Integer roleId) {
+        return rolePermission(appConfig.getAppPermissions(), roleId);
     }
 
     private SysPermission[] rolePermission(SysPermission[] permissions, Integer roleId) {

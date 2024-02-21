@@ -2,12 +2,12 @@ package site.xleon.platform.controllers;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import site.xleon.platform.core.IdParams;
 import site.xleon.platform.core.MyException;
@@ -42,6 +42,13 @@ public class SysRoleController extends BaseController {
 
     private final SysUserMapper sysUserMapper;
 
+    /**
+     * 获取分页角色列表
+     *
+     * @param page page
+     * @param pageSize page size
+     * @return 角色列表
+     */
     @GetMapping()
     public Result<Page<SysRoleEntity>> list(
             @RequestParam(value = "page", required = false) Integer page,
@@ -70,7 +77,7 @@ public class SysRoleController extends BaseController {
      *
      * @param params AddParams
      * @return role
-     * @throws MyException
+     * @throws MyException exception
      */
     @PostMapping()
     public Result<SysRoleEntity> add(@RequestBody @Valid AddParams params) throws MyException {
@@ -133,6 +140,12 @@ public class SysRoleController extends BaseController {
         return Result.success(role);
     }
 
+    /**
+     * 批量删除角色
+     * @param params 角色id组
+     * @return 被删除的id组
+     * @throws MyException exception
+     */
     @DeleteMapping
     public Result<List<String>> deleteRole(@RequestBody IdParams params) throws MyException {
         QueryWrapper<SysUserEntity> queryUser = new QueryWrapper<>();
@@ -149,34 +162,45 @@ public class SysRoleController extends BaseController {
         return Result.success((params.getIds()));
     }
 
+    /**
+     * 获取角色权限
+     * @param id 角色id
+     * @return 权限组
+     * @throws IOException exception
+     */
     @GetMapping("/{id}/permission")
     public Result<SysPermission[]> listRolePermission(@PathVariable Integer id) throws IOException {
         SysPermission[] rolePermissions = sysRolePermissionService.permissions(id);
         return Result.success(rolePermissions);
     }
 
-    @Data
-    private static class UpdatePermissionParams {
-        private List<String> permissions;
-    }
-
-    @PutMapping("/{id}/permission")
-    public Result<List<String>> updatePermission(@PathVariable Integer id, @RequestBody UpdatePermissionParams params){
-        UpdateWrapper<SysRolePermissionEntity> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("role_id", id);
-        SysRolePermissionEntity rolePermission = new SysRolePermissionEntity();
-        rolePermission.setState(StateEnum.NONE);
-        sysRolePermissionMapper.update(rolePermission, updateWrapper);
+    /**
+     * 更新角色权限配置
+     *
+     * @param roleId role id
+     * @param params 允许的权限名数组
+     * @return role id
+     */
+    @PutMapping("/{roleId}/permission")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Integer> updatePermission(
+            @PathVariable Integer roleId,
+            @RequestBody List<String> params){
+        // 首先移除角色权限配置
+        LambdaQueryWrapper<SysRolePermissionEntity> queryRolePermission = new LambdaQueryWrapper<>();
+        queryRolePermission.eq(SysRolePermissionEntity::getRoleId, roleId);
+        sysRolePermissionMapper.delete(queryRolePermission);
 
         List<SysRolePermissionEntity> rolePermissions = new ArrayList<>();
         for (String permission :
-                params.getPermissions()) {
+                params) {
             LambdaQueryWrapper<SysRolePermissionEntity> query = new LambdaQueryWrapper<>();
-            query.eq(SysRolePermissionEntity::getRoleId, id).eq(SysRolePermissionEntity::getPermission, permission);
+            query.eq(SysRolePermissionEntity::getRoleId, roleId)
+                    .eq(SysRolePermissionEntity::getPermission, permission);
             SysRolePermissionEntity existPermission = sysRolePermissionMapper.selectOne(query);
             if (existPermission == null) {
                 existPermission = new SysRolePermissionEntity();
-                existPermission.setRoleId(id);
+                existPermission.setRoleId(roleId);
                 existPermission.setPermission(permission);
             }
 
@@ -184,7 +208,7 @@ public class SysRoleController extends BaseController {
             rolePermissions.add(existPermission);
         }
 
-        sysRolePermissionService.saveOrUpdateBatch(rolePermissions);
-        return Result.success(params.permissions);
+        sysRolePermissionService.saveBatch(rolePermissions);
+        return Result.success(roleId);
     }
 }

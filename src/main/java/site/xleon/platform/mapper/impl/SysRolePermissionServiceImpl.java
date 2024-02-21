@@ -10,7 +10,6 @@ import site.xleon.platform.mapper.SysRolePermissionService;
 import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRolePermissionEntity;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.IOException;
 
 @Service()
@@ -21,10 +20,22 @@ public class SysRolePermissionServiceImpl
 
     private final AppConfig appConfig;
 
+    /**
+     * 角色权限
+     * @param roleId 角色id
+     * @return 权限组
+     * @throws IOException exception
+     */
     public SysPermission[] permissions(Integer roleId) throws IOException {
-        return rolePermission(appConfig.appPermissions(), roleId);
+        return rolePermission(appConfig.getAppPermissions(), roleId);
     }
 
+    /**
+     * 递归权限组，根据角色id和权限名（permission title），设置state（权限状态）
+     * @param permissions 权限组
+     * @param roleId role id
+     * @return 权限组分配状态
+     */
     private SysPermission[] rolePermission(SysPermission[] permissions, Integer roleId) {
         for (SysPermission permission :
                 permissions) {

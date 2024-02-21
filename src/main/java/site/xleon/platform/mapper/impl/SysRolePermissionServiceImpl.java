@@ -10,8 +10,6 @@ import site.xleon.platform.mapper.SysRolePermissionService;
 import site.xleon.platform.models.SysPermission;
 import site.xleon.platform.models.SysRolePermissionEntity;
 
-import java.io.IOException;
-
 @Service()
 @AllArgsConstructor
 public class SysRolePermissionServiceImpl
@@ -24,9 +22,8 @@ public class SysRolePermissionServiceImpl
      * 角色权限
      * @param roleId 角色id
      * @return 权限组
-     * @throws IOException exception
      */
-    public SysPermission[] permissions(Integer roleId) throws IOException {
+    public SysPermission[] permissions(Integer roleId) {
         return rolePermission(appConfig.getAppPermissions(), roleId);
     }
 

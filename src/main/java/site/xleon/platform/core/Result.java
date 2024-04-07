@@ -37,6 +37,5 @@ public class Result<T> {
         }
         return new Result<>(code.getValue(), message, data);
     }
-
 }
 

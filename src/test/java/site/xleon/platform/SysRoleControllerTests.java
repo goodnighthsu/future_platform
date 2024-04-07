@@ -1,13 +1,13 @@
 package site.xleon.platform;
 
-import com.alibaba.fastjson.JSON;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import site.xleon.platform.models.SysRoleEntity;
+//import com.alibaba.fastjson.JSON;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.http.MediaType;
+//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+//import org.springframework.transaction.annotation.Transactional;
+//import site.xleon.platform.models.SysRoleEntity;
 
-public class SysRoleControllerTests extends Base {
+//public class SysRoleControllerTests extends Base {
 //    @Test
 //    void listTest() throws Exception {
 //        mockMvc.perform(
@@ -45,4 +45,4 @@ public class SysRoleControllerTests extends Base {
 //                .andExpect(isSuccess())
 //                .andReturn();
 //    }
-}
+//}

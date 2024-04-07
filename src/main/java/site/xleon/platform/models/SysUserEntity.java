@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import site.xleon.platform.core.cql.TableRelative;
+import site.xleon.platform.core.cql.BaseEntity;
 import site.xleon.platform.core.enums.StateEnum;
 
 /**
@@ -13,7 +15,7 @@ import site.xleon.platform.core.enums.StateEnum;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@TableName("sys_user")
+@TableName(value = "sys_user")
 public class SysUserEntity extends BaseEntity {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -32,6 +34,7 @@ public class SysUserEntity extends BaseEntity {
     private Integer roleId;
 
     @TableField(exist = false)
+    @TableRelative(id="roleId")
     private SysRoleEntity role;
 
     @TableField(exist = false)

@@ -1,13 +1,13 @@
 package site.xleon.platform;
 
-import com.alibaba.fastjson.JSONObject;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import site.xleon.platform.controllers.SysUserController;
+//import com.alibaba.fastjson.JSONObject;
+//import org.junit.jupiter.api.Test;
+//import org.springframework.http.MediaType;
+//import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+//import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+//import site.xleon.platform.controllers.SysUserController;
 
-class SysUserControllerTests extends Base {
+//class SysUserControllerTests extends Base {
 //    @Test
 //    void loginSuccessTest() throws Exception {
 //        SysUserController.LoginParams  params = new SysUserController.LoginParams();
@@ -34,4 +34,4 @@ class SysUserControllerTests extends Base {
 //                .andExpect(isSuccess())
 //                .andReturn();
 //    }
-}
+//}

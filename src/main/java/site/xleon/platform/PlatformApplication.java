@@ -4,10 +4,12 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 import site.xleon.platform.config.druid.DynamicDataSourceConfig;
 import site.xleon.platform.core.NettyServer;
 
+@EnableCaching
 @MapperScan("site.xleon.platform.mapper")
 @Import({DynamicDataSourceConfig.class})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})

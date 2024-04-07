@@ -1,15 +1,17 @@
 package site.xleon.platform.controllers;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 import site.xleon.platform.core.IdParams;
 import site.xleon.platform.core.MyException;
 import site.xleon.platform.core.Result;
+
 import site.xleon.platform.core.enums.StateEnum;
 import site.xleon.platform.mapper.SysRoleMapper;
 import site.xleon.platform.mapper.SysUserMapper;
@@ -21,6 +23,8 @@ import site.xleon.platform.models.SysUserEntity;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -51,7 +55,7 @@ public class SysUserController extends BaseController {
      * @return sys user
      */
     @PostMapping("/login")
-    public Result<SysUserEntity> login(@RequestBody @Valid  LoginParams params) throws MyException {
+    public Result<SysUserEntity> login(@RequestBody @Valid LoginParams params) throws MyException {
         LambdaQueryWrapper<SysUserEntity> query = new LambdaQueryWrapper<>();
         query.select(SysUserEntity::getId, SysUserEntity::getState)
                 .eq(SysUserEntity::getAccount, params.getAccount())
@@ -67,28 +71,30 @@ public class SysUserController extends BaseController {
 
         user.setToken(jwt.createByUser(user, true));
         user.setId(null);
+
         return Result.success(user);
     }
 
-    @GetMapping()
-    public Result<Page<SysUserEntity>> list(
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize
-    ) {
-        Page<SysUserEntity> paging = utils.page(page, pageSize);
-        QueryWrapper<SysUserEntity> query = new QueryWrapper<>();
-        query.select(SysUserEntity.class, item -> !"password".equals(item.getColumn())).orderByDesc("id");
-        Page<SysUserEntity> users = sysUserMapper.selectPage(paging, query);
-        users.getRecords().forEach( user -> {
-            QueryWrapper<SysRoleEntity> queryRole = new QueryWrapper<>();
-            queryRole.select(SysRoleEntity.class,
-                    item -> "id".equals(item.getColumn()) || "title".equals(item.getColumn())
-            ).orderByDesc("title");
-            SysRoleEntity role = sysRoleMapper.selectById(user.getRoleId());
-            user.setRole(role);
-        });
-        return Result.success(users);
-    }
+//    @Cacheable(cacheNames="SysUser", unless="#result.code != 1")
+//    @GetMapping()
+//    public Result<Page<SysUserEntity>> list(
+//            @RequestParam(value = "page", required = false) Integer page,
+//            @RequestParam(value = "pageSize", required = false) Integer pageSize
+//    )  {
+//        Page<SysUserEntity> paging = utils.page(page, pageSize);
+//        JoinLambdaWrapper<SysUserEntity> query = new JoinLambdaWrapper<>(SysUserEntity.class);
+//        Page<SysUserEntity> users = query
+//                .selectAll(Arrays.asList(SysUserEntity::getPassword, SysUserEntity::getRoleId))
+//                .orderByDesc(SysUserEntity::getId)
+//                .leftJoin(SysRoleEntity.class, SysRoleEntity::getId, SysUserEntity::getRoleId)
+//                .oneToOneSelect(
+//                        SysUserEntity::getRole,
+//                        (item) -> item.add(SysRoleEntity::getId, SysRoleEntity::getTitle)
+//                )
+//                .end()
+//                .joinPage(paging);
+//        return Result.success(users);
+//    }
 
     @Data
     private static class AddParams {
@@ -115,6 +121,7 @@ public class SysUserController extends BaseController {
      * @return role
      * @throws MyException exception
      */
+    @CacheEvict(cacheNames = "SysUser", allEntries = true, condition = "#result.code == 1")
     @PostMapping()
     public Result<SysUserEntity> add(@RequestBody @Valid AddParams params) throws MyException {
         // check account
@@ -167,7 +174,7 @@ public class SysUserController extends BaseController {
     }
 
     @GetMapping("/current")
-    public Result<SysUserEntity> current() throws MyException, IOException {
+    public Result<SysUserEntity> current() throws MyException {
         SysUserEntity user = sysUserMapper.selectById(getUserId());
         user.setPassword(null);
         SysPermission[] permissions = rolePermissionServiceImpl.permissions(user.getRoleId());
@@ -181,6 +188,7 @@ public class SysUserController extends BaseController {
      * @return updated
      * @throws MyException exception
      */
+    @CacheEvict(cacheNames = "SysUser", allEntries = true, condition = "#result.code == 1")
     @PutMapping()
     public Result<SysUserEntity> update(@RequestBody SysUserEntity user) throws MyException {
         if (user.getId() == null) {
@@ -200,6 +208,7 @@ public class SysUserController extends BaseController {
         return Result.success(user);
     }
 
+    @CacheEvict(cacheNames = "SysUser", allEntries = true, condition = "#result.code == 1")
     @DeleteMapping
     public Result<List<String>> deleteUser(@RequestBody IdParams params) throws MyException {
         if (sysUserMapper.deleteBatchIds(params.getIds()) == 0) {

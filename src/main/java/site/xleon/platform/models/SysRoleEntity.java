@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import site.xleon.platform.core.cql.BaseEntity;
 import site.xleon.platform.core.enums.StateEnum;
 
 @EqualsAndHashCode(callSuper = true)
